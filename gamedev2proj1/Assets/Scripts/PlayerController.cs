@@ -14,6 +14,7 @@ public class PlayerController : MonoBehaviour
     private float movementX;
     private float movementY;
     public GameObject battleUI;
+    public bool battleMode = false;
    
     void Start()
     {
@@ -45,9 +46,17 @@ public class PlayerController : MonoBehaviour
     }
 
     void FixedUpdate()
-    {
-        Vector3 movement = new Vector3(movementX, 0.0f, movementY);
-        rb.AddForce(movement * speed);
+    { 
+        if(battleMode == false)
+        {
+            GetComponent<Rigidbody>().isKinematic = false;
+            Vector3 movement = new Vector3(movementX, 0.0f, movementY);
+            rb.AddForce(movement * speed);
+        }
+        if(battleMode == true)
+        {
+            GetComponent<Rigidbody>().isKinematic = true;
+        }
     }
 
     private void OnTriggerEnter(Collider other)

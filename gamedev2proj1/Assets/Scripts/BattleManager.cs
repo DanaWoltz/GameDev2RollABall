@@ -7,6 +7,7 @@ public class BattleManager : MonoBehaviour
     public bool battleMode;
 
     public AudioSource battleMusic;
+    public AudioSource travelMusic;
 
     private GameObject enemy;
     private GameObject player;
@@ -20,8 +21,9 @@ public class BattleManager : MonoBehaviour
     private IEnumerator StartBattle(float waitTime)
     {
         battleMusic.Play();
-        enemy.GetComponent<MoveCube>().battleMode = true;
-        player.GetComponent<SimplePlayerController>().battleMode = true;
+        travelMusic.Stop();
+        enemy.GetComponent<EnemyMovement>().battleMode = true;
+        player.GetComponent<PlayerController>().battleMode = true;
         Debug.Log("Battle Started");
 
         yield return new WaitForSeconds(waitTime);
@@ -33,9 +35,11 @@ public class BattleManager : MonoBehaviour
     private IEnumerator EndBattle(float waitTime)
     {
         yield return new WaitForSeconds(waitTime);
-        enemy.GetComponent<MoveCube>().battleMode = false;
-        player.GetComponent<SimplePlayerController>().battleMode = false;
+        enemy.GetComponent<EnemyMovement>().battleMode = false;
+        player.GetComponent<PlayerController>().battleMode = false;
         battleMode = false;
+        battleMusic.Stop();
+        travelMusic.Play();
         Debug.Log("Battle Ended");
     }
 

@@ -5,21 +5,22 @@ using UnityEngine;
 
 public class EnemyMovement : MonoBehaviour
 {
-    [SerializeField] float speed = 5;
-    [SerializeField] float xLimit = 3;
-    [SerializeField] float zLimit = 3;
-
+    [SerializeField] float speed = 5; //gameObject Movement Speed
+    [SerializeField] float xLimit = 3; // limit for x-axis movement
+    [SerializeField] float zLimit = 3; // limit for z-axis movement
     [SerializeField] float coroutineMinLimit = 1; // minimum number for random coroutine timer
     [SerializeField] float coroutineMaxLimit = 3; // maximum number for random coroutine timer
 
-    public bool zAxis;
-    private bool targetHit;
+    public bool zAxis; // if true, gameObject will move along z-axis. If false, gameObject will move along x-axis.
+    private bool targetHit; // if false, gameObject will move towards the positive axis limit. If true, gameObject will move towards negative axis Limit.
+    public bool battleMode;
 
+    private BattleManager battleManager;
 
-
-    // Start is called before the first frame update
     void Start()
     {
+        battleManager = GameObject.Find("BattleManager").GetComponent<BattleManager>();
+
         // checks to see if zAxis bool is true or false
         if (zAxis)
         {
@@ -31,7 +32,6 @@ public class EnemyMovement : MonoBehaviour
         }
     }
 
-    // Update is called once per frame
     void Update()
     {
         Movement();
@@ -39,53 +39,56 @@ public class EnemyMovement : MonoBehaviour
 
     void Movement()
     {
-        if (!zAxis)
+        if (!battleMode)
         {
-            // positive movement along x-axis
-            if (!targetHit)
+            if (!zAxis)
             {
-                transform.Translate(Vector3.right * speed * Time.deltaTime);
-                if (transform.position.x >= xLimit)
+                // positive movement along x-axis
+                if (!targetHit)
                 {
-                    targetHit = true;
+                    transform.Translate(Vector3.right * speed * Time.deltaTime);
+                    if (transform.position.x >= xLimit)
+                    {
+                        targetHit = true;
+                    }
+                }
+
+                // negative movement along x-axis
+                if (targetHit)
+                {
+                    transform.Translate(Vector3.left * speed * Time.deltaTime);
+                    if (transform.position.x <= -xLimit)
+                    {
+                        targetHit = false;
+                    }
                 }
             }
 
-            // negative movement along x-axis
-            if (targetHit)
+            else if (zAxis)
             {
-                transform.Translate(Vector3.left * speed * Time.deltaTime);
-                if (transform.position.x <= -xLimit)
+                // positive movement along z-axis
+                if (!targetHit)
                 {
-                    targetHit = false;
+                    transform.Translate(Vector3.forward * speed * Time.deltaTime);
+                    if (transform.position.z >= zLimit)
+                    {
+                        targetHit = true;
+                    }
+                }
+
+                // negative movement along z-axis
+                if (targetHit)
+                {
+                    transform.Translate(Vector3.back * speed * Time.deltaTime);
+                    if (transform.position.z <= -zLimit)
+                    {
+                        targetHit = false;
+                    }
                 }
             }
         }
-
-        else if (zAxis)
-        {
-            // positive movement along z-axis
-            if (!targetHit)
-            {
-                transform.Translate(Vector3.forward * speed * Time.deltaTime);
-                if (transform.position.z >= zLimit)
-                {
-                    targetHit = true;
-                }
-            }
-
-            // negative movement along z-axis
-            if (targetHit)
-            {
-                transform.Translate(Vector3.back * speed * Time.deltaTime);
-                if (transform.position.z <= -zLimit)
-                {
-                    targetHit = false;
-                }
-            }
-        }
-
     }
+
     // Function that Turns the Z-Axis bool on, and starts the coroutine to turn it off
     private IEnumerator zAxisOn(float waitTime)
     {
@@ -102,6 +105,16 @@ public class EnemyMovement : MonoBehaviour
         yield return new WaitForSeconds(waitTime);
 
         StartCoroutine("zAxisOn", Random.Range(coroutineMinLimit, coroutineMaxLimit));
+    }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.gameObject.CompareTag("Player"))
+        {
+            battleManager.StartBattleMode();
+            //StartCoroutine("StartBattle", 2.5f);
+            Debug.Log("Collided with Enemy");
+        }
     }
 
 }
