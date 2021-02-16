@@ -6,7 +6,7 @@ public class BattleChoices : MonoBehaviour
 {
     public GameObject playerObject;
 
-    void Fight()
+   /* void Fight()
     {
         if(playerObject.GetComponent<Material> == "ballRed")
         {
@@ -16,6 +16,6 @@ public class BattleChoices : MonoBehaviour
             }
             
         }
-    }
+    } */
 
 }
