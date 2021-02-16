@@ -5,6 +5,10 @@ TagManager:
   serializedVersion: 2
   tags:
   - PickUp
+  - Enemy
+  - EnemyBlue
+  - EnemyRed
+  - EnemyGreen
   layers:
   - Default
   - TransparentFX

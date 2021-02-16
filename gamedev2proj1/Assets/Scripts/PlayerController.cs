@@ -13,6 +13,7 @@ public class PlayerController : MonoBehaviour
     private int count;
     private float movementX;
     private float movementY;
+    public GameObject battleUI;
    
     void Start()
     {
@@ -59,6 +60,22 @@ public class PlayerController : MonoBehaviour
 
             SetCountText();
         }
-        
+        if (other.gameObject.CompareTag("EnemyRed"))
+        {
+            Battle();
+        }
+        if (other.gameObject.CompareTag("EnemyBlue"))
+        {
+            Battle();
+        }
+        if (other.gameObject.CompareTag("EnemyGreen"))
+        {
+            Battle();
+        }
+
+    }
+    void Battle()
+    {
+        battleUI.SetActive(true);
     }
 }
