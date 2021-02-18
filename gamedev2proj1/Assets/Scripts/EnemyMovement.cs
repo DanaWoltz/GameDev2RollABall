@@ -5,15 +5,17 @@ using UnityEngine;
 
 public class EnemyMovement : MonoBehaviour
 {
+    public int enemyHealth = 16;
+    public int enemyAttackDamage = 16;
     [SerializeField] float speed = 5; //gameObject Movement Speed
     [SerializeField] float xLimit = 3; // limit for x-axis movement
     [SerializeField] float zLimit = 3; // limit for z-axis movement
+
     [SerializeField] float coroutineMinLimit = 1; // minimum number for random coroutine timer
     [SerializeField] float coroutineMaxLimit = 3; // maximum number for random coroutine timer
 
     public bool zAxis; // if true, gameObject will move along z-axis. If false, gameObject will move along x-axis.
     private bool targetHit; // if false, gameObject will move towards the positive axis limit. If true, gameObject will move towards negative axis Limit.
-    public bool battleMode;
 
     private BattleManager battleManager;
 
@@ -35,11 +37,33 @@ public class EnemyMovement : MonoBehaviour
     void Update()
     {
         Movement();
+        BystanderEnemyController();
+    }
+
+    public void BystanderEnemyController()
+    {
+        if (!battleManager.battleMode)
+        {
+            if (gameObject != battleManager.currentEnemy)
+            {
+                GetComponent<Collider>().enabled = true;
+                GetComponent<MeshRenderer>().enabled = true;
+            }
+        }
+
+        if (battleManager.battleMode)
+        {
+            if (gameObject != battleManager.currentEnemy)
+            {
+                GetComponent<Collider>().enabled = false;
+                GetComponent<MeshRenderer>().enabled = false;
+            }
+        }
     }
 
     void Movement()
     {
-        if (!battleMode)
+        if (!battleManager.battleMode)
         {
             if (!zAxis)
             {
@@ -111,9 +135,10 @@ public class EnemyMovement : MonoBehaviour
     {
         if (other.gameObject.CompareTag("Player"))
         {
-            battleManager.StartBattleMode();
-            //StartCoroutine("StartBattle", 2.5f);
-            Debug.Log("Collided with Enemy");
+            battleManager.currentEnemy = gameObject;
+            battleManager.StartCoroutine("StartBattle", 2.5f);
+
+            Debug.Log("Collided with enemy");
         }
     }
 
