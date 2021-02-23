@@ -9,6 +9,8 @@ public class BattleManager : MonoBehaviour
     public AudioSource travelMusic;
     public GameObject[] enemyPrefabs;
     public GameObject currentEnemy = null;
+    public GameObject battleUI;
+
 
     private GameObject player;
 
@@ -28,6 +30,8 @@ public class BattleManager : MonoBehaviour
         //BattleEngaged();
         if (battleMode)
         {
+            battleUI.SetActive(true);
+
             if (player.GetComponent<PlayerController>().playerHealth <= 0)
             {
                 // Game Over
@@ -37,6 +41,7 @@ public class BattleManager : MonoBehaviour
             if (currentEnemy.GetComponent<EnemyMovement>().enemyHealth <= 0)
             {
                 StartCoroutine("EndBattlePlayerVictory", 3);
+                battleUI.SetActive(false);
             }
         }
 
@@ -71,8 +76,8 @@ public class BattleManager : MonoBehaviour
 
     void BattlePositions()
     {
-        currentEnemy.transform.position = new Vector3(-3, currentEnemy.transform.position.y, 0);
-        player.transform.position = new Vector3(3, player.transform.position.y, 0);
+        currentEnemy.transform.position = new Vector3(-3, currentEnemy.transform.position.y, currentEnemy.transform.position.z);
+        player.transform.position = new Vector3(3, player.transform.position.y, currentEnemy.transform.position.z);
     }
 
     void BattleEngaged()

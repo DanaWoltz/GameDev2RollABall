@@ -9,7 +9,9 @@ public class EnemyMovement : MonoBehaviour
     public int enemyAttackDamage = 16;
     [SerializeField] float speed = 5; //gameObject Movement Speed
     [SerializeField] float xLimit = 3; // limit for x-axis movement
+    [SerializeField] float xLimitNeg = 1;
     [SerializeField] float zLimit = 3; // limit for z-axis movement
+    [SerializeField] float zLimitNeg = 1;
 
     [SerializeField] float coroutineMinLimit = 1; // minimum number for random coroutine timer
     [SerializeField] float coroutineMaxLimit = 3; // maximum number for random coroutine timer
@@ -81,7 +83,7 @@ public class EnemyMovement : MonoBehaviour
                 if (targetHit)
                 {
                     transform.Translate(Vector3.left * speed * Time.deltaTime);
-                    if (transform.position.x <= -xLimit)
+                    if (transform.position.x <= xLimitNeg)
                     {
                         targetHit = false;
                     }
@@ -114,7 +116,7 @@ public class EnemyMovement : MonoBehaviour
     }
 
     // Function that Turns the Z-Axis bool on, and starts the coroutine to turn it off
-    private IEnumerator zAxisOn(float waitTime)
+  /*  private IEnumerator zAxisOn(float waitTime)
     {
         zAxis = true;
         yield return new WaitForSeconds(waitTime);
@@ -129,7 +131,7 @@ public class EnemyMovement : MonoBehaviour
         yield return new WaitForSeconds(waitTime);
 
         StartCoroutine("zAxisOn", Random.Range(coroutineMinLimit, coroutineMaxLimit));
-    }
+    } */
 
     private void OnTriggerEnter(Collider other)
     {
