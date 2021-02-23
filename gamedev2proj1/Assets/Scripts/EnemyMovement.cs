@@ -141,5 +141,4 @@ public class EnemyMovement : MonoBehaviour
             Debug.Log("Collided with enemy");
         }
     }
-
 }
