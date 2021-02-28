@@ -21,19 +21,22 @@ public class EnemyMovement : MonoBehaviour
 
     private BattleManager battleManager;
 
+    public ParticleSystem hitParticle;
+    
+
     void Start()
     {
         battleManager = GameObject.Find("BattleManager").GetComponent<BattleManager>();
 
         // checks to see if zAxis bool is true or false
-        if (zAxis)
-        {
-            StartCoroutine("zAxisOff", Random.Range(coroutineMinLimit, coroutineMaxLimit));
-        }
-        else if (!zAxis)
-        {
-            StartCoroutine("zAxisOn", Random.Range(coroutineMinLimit, coroutineMaxLimit));
-        }
+        //if (zAxis)
+        //{
+        //    StartCoroutine("zAxisOff", Random.Range(coroutineMinLimit, coroutineMaxLimit));
+        //}
+        //else if (!zAxis)
+        //{
+        //    StartCoroutine("zAxisOn", Random.Range(coroutineMinLimit, coroutineMaxLimit));
+        //}
     }
 
     void Update()
