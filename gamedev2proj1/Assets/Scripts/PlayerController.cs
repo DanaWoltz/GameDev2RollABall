@@ -4,112 +4,87 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using TMPro;
 
+
 public class PlayerController : MonoBehaviour
 {
+    private Rigidbody rb; // Reference to rigidbody. Declared at Start
+
     public float speed = 0;
-    //public TextMeshProUGUI colorText;
-    
-    //public Transform cameraTransform;
-    private Rigidbody rb;
-    
-    private float movementX;
-    private float movementY;
-    //public float turnSmoothTime;
-    //float turnSmoothVelocity;
-    
-    public bool battleMode = false;
+    private float movementX; // Calculated in OnMove()
+    private float movementY; // Calculated in OnMove()
+
     public int playerHealth = 16;
-    public int playerAttackDamage = 0;
-    public BattleManager battleManager;
-    public ParticleSystem hitParticle;
-   
+    public int playerAttackDamage = 0; // Set in Battle Manager depending on Enemy/Player Color
+
+    public ParticleSystem hitParticle; // Particle that plays when player is attacked by enemy
+
+    public BattleManager battleManager; // reference to BattleManager
+
+
+
+
     void Start()
     {
-        rb = GetComponent<Rigidbody>();
-        
-
-        //SetCountText();
-        //winTextObject.SetActive(false);
+        rb = GetComponent<Rigidbody>(); // Finds player rigidbody
     }
 
-    void OnMove(InputValue movementValue)
+    void FixedUpdate()
+    {
+        PlayerMovement();
+    }
+
+    void OnMove(InputValue movementValue) // Stores input value. Used in PlayerMovement()
     {
         Vector2 movementVector = movementValue.Get<Vector2>();
 
         movementX = movementVector.x;
         movementY = movementVector.y;
-
     }
 
-    
-
-    void FixedUpdate()
-    { 
-        if(battleManager.battleMode == false)
+    void PlayerMovement() // Controls player movement
+    {
+        if (battleManager.battleMode == false) // if battle mode = false, allow movement
         {
             GetComponent<Rigidbody>().isKinematic = false;
+
+            // Movement Calculations
             Vector3 movement = new Vector3(movementX, 0.0f, movementY).normalized;
             rb.AddForce(movement * speed);
-
-            //if (movement.magnitude > 0.01f)
-            //{
-            //    float targetAngle = Mathf.Atan2(movementX, movementY) * Mathf.Rad2Deg + cameraTransform.eulerAngles.y;
-            //    float angle = Mathf.SmoothDampAngle(transform.eulerAngles.y, targetAngle, ref turnSmoothVelocity, turnSmoothTime);
-            //    transform.rotation = Quaternion.Euler(0f, angle, 0f);
-            //    Vector3 moveDir = Quaternion.Euler(0f, targetAngle, 0f) * Vector3.forward;
-            //    rb.AddForce(moveDir.normalized * speed);
-            //}
         }
-        if(battleManager.battleMode == true)
-        {
 
+        if (battleManager.battleMode == true) // if battle mode is true, make player rigidbody kinematic which immediately halts their movement
+        {
             GetComponent<Rigidbody>().isKinematic = true;
         }
     }
 
-    private void OnTriggerEnter(Collider other)
+
+
+    private void OnTriggerEnter(Collider other) // used for pickup items. Sets pickup item as false and changes player color
     {
         if (other.gameObject.CompareTag("PickUp"))
         {
-            Color pickupColor = other.gameObject.GetComponent<Renderer>().material.color;
+            Color pickupColor = other.gameObject.GetComponent<Renderer>().material.color; // Stores pickup color
             Debug.Log(pickupColor);
-            GetComponent<Renderer>().material.color = pickupColor;
+            GetComponent<Renderer>().material.color = pickupColor; // Switches player color to stored pickup color
             other.gameObject.SetActive(false);
-
-
-            // count = count + 1;
-            //SetCountText();
         }
-        //if (other.gameObject.CompareTag("EnemyRed"))
-        //{
-        //    Battle();
-        //}
-        //if (other.gameObject.CompareTag("EnemyBlue"))
-        //{
-        //    Battle();
-        //}
-        //if (other.gameObject.CompareTag("EnemyGreen"))
-        //{
-        //    Battle();
-        //}
 
     }
 
-    public void PlayerAttack()
+    public void PlayerAttack() // Player attack loop. if Enemy health is greater than 0, run EnemyBattleLoop Coroutine. Else, Run the end battle coroutine
     {
         Debug.Log("Player Has Attacked for: " + playerAttackDamage);
         battleManager.currentEnemy.GetComponent<EnemyMovement>().hitParticle.Play();
         battleManager.currentEnemy.GetComponent<EnemyMovement>().enemyHealth -= playerAttackDamage;
         battleManager.UpdateUIInfo();
-        if (battleManager.currentEnemy.GetComponent<EnemyMovement>().enemyHealth <= 0)
+        if (battleManager.currentEnemy.GetComponent<EnemyMovement>().enemyHealth <= 0) // if Enemy is dead
         {
-            battleManager.StartCoroutine("EndBattlePlayerVictory", 3);
+            battleManager.StartCoroutine("EndBattlePlayerVictory", 3); // Defined in BattleManager
         }
-        else if (battleManager.currentEnemy.GetComponent<EnemyMovement>().enemyHealth > 0)
+        else if (battleManager.currentEnemy.GetComponent<EnemyMovement>().enemyHealth > 0) // If Enemy is still alive
         {
-            battleManager.StartCoroutine("EnemyBattleLoop", 1.5f);
+            battleManager.StartCoroutine("EnemyBattleLoop", 1.5f); // Defined in BattleManager
         }
-        
     }
-    
 }

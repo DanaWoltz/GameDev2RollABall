@@ -2,11 +2,11 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
 public class EnemyMovement : MonoBehaviour
 {
     public int enemyHealth = 16;
-    public int enemyAttackDamage = 16;
+    public int enemyAttackDamage = 16; // Defined in BattleManager depending on Player/Enemy Color
+
     [SerializeField] float speed = 5; //gameObject Movement Speed
     [SerializeField] float xLimit = 3; // limit for x-axis movement
     [SerializeField] float xLimitNeg = 1;
@@ -19,24 +19,15 @@ public class EnemyMovement : MonoBehaviour
     public bool zAxis; // if true, gameObject will move along z-axis. If false, gameObject will move along x-axis.
     private bool targetHit; // if false, gameObject will move towards the positive axis limit. If true, gameObject will move towards negative axis Limit.
 
-    private BattleManager battleManager;
+    private BattleManager battleManager; // Reference to BattleManager. Declared in Start
 
-    public ParticleSystem hitParticle;
-    
+    public ParticleSystem hitParticle; // Particle that plays when enemy is hit
+
 
     void Start()
     {
-        battleManager = GameObject.Find("BattleManager").GetComponent<BattleManager>();
+        battleManager = GameObject.Find("BattleManager").GetComponent<BattleManager>(); // Find BattleManager
 
-        // checks to see if zAxis bool is true or false
-        //if (zAxis)
-        //{
-        //    StartCoroutine("zAxisOff", Random.Range(coroutineMinLimit, coroutineMaxLimit));
-        //}
-        //else if (!zAxis)
-        //{
-        //    StartCoroutine("zAxisOn", Random.Range(coroutineMinLimit, coroutineMaxLimit));
-        //}
     }
 
     void Update()
@@ -45,8 +36,10 @@ public class EnemyMovement : MonoBehaviour
         BystanderEnemyController();
     }
 
-    public void BystanderEnemyController()
+    public void BystanderEnemyController() // Turns enemies that aren't currently in battle off for the duration of the battle
     {
+        // Enemy MeshRenderers and Colliders are turned off if they arent the current enemy to make them invisible during battle
+
         if (!battleManager.battleMode)
         {
             if (gameObject != battleManager.currentEnemy)
@@ -68,6 +61,10 @@ public class EnemyMovement : MonoBehaviour
 
     void Movement()
     {
+        // Moves players back and fourth along x axis and z axis. 
+        // If bool zAxis is false, enemies move on x axis. If true, they move on z axis
+        // Once they hit their target, they move towards their negative target
+
         if (!battleManager.battleMode)
         {
             if (!zAxis)
@@ -118,30 +115,13 @@ public class EnemyMovement : MonoBehaviour
         }
     }
 
-    // Function that Turns the Z-Axis bool on, and starts the coroutine to turn it off
-  /*  private IEnumerator zAxisOn(float waitTime)
-    {
-        zAxis = true;
-        yield return new WaitForSeconds(waitTime);
 
-        StartCoroutine("zAxisOff", Random.Range(coroutineMinLimit, coroutineMaxLimit));
-    }
-
-    // Function that Turns the Z-Axis bool off, and starts the coroutine to turn on
-    private IEnumerator zAxisOff(float waitTime)
-    {
-        zAxis = false;
-        yield return new WaitForSeconds(waitTime);
-
-        StartCoroutine("zAxisOn", Random.Range(coroutineMinLimit, coroutineMaxLimit));
-    } */
-
-    private void OnTriggerEnter(Collider other)
+    private void OnTriggerEnter(Collider other) // Starts the battle if player collides into them
     {
         if (other.gameObject.CompareTag("Player"))
         {
-            battleManager.currentEnemy = gameObject;
-            battleManager.StartCoroutine("StartBattle", 2.5f);
+            battleManager.currentEnemy = gameObject; // Makes this enemy the currentEnemy on BattleManager
+            battleManager.StartCoroutine("StartBattle", 2.5f); // Defined in BattleManager
 
             Debug.Log("Collided with enemy");
         }

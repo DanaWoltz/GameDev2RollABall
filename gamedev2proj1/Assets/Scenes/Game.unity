@@ -2357,11 +2357,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   speed: 8
-  battleMode: 0
-  playerHealth: 32
+  playerHealth: 48
   playerAttackDamage: 0
-  battleManager: {fileID: 1264824119}
   hitParticle: {fileID: 415053484}
+  battleManager: {fileID: 1264824119}
 --- !u!114 &1066655395
 MonoBehaviour:
   m_ObjectHideFlags: 0
